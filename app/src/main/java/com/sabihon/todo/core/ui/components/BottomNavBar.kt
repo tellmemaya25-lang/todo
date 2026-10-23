@@ -22,10 +22,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -50,7 +50,7 @@ import com.sabihon.todo.core.ui.theme.AccentBlue
 
 /**
  * Bottom nav – edge-to-edge flush, top 24.dp rounded, 5.dp subtle outer shadow
- * Tabs: Home | Search | + (center 48dp blue) | History | Profile
+ * Tabs: Home | Projects | + (center 48dp blue) | History | Profile
  * With micro-interactions: ripple, scale spring, color animation, haptic
  */
 data class BottomNavTab(
@@ -67,7 +67,7 @@ fun RoundedBottomNavBar(
 ) {
     val tabs = listOf(
         BottomNavTab("Home", Icons.Filled.Home, "home"),
-        BottomNavTab("Search", Icons.Filled.Search, "search"),
+        BottomNavTab("Projects", Icons.Filled.GridView, "projects"),
         BottomNavTab("Add", Icons.Filled.Add, "add"),
         BottomNavTab("History", Icons.Filled.History, "history"),
         BottomNavTab("Profile", Icons.Filled.Person, "profile")
@@ -105,8 +105,8 @@ fun RoundedBottomNavBar(
         ) {
             tabs.forEach { tab ->
                 val isSelected = when (tab.route) {
-                    "home" -> currentRoute.contains("Home") || currentRoute.contains("AllTasks") || currentRoute.contains("Categories")
-                    "search" -> currentRoute.contains("Search")
+                    "home" -> currentRoute.contains("Home")
+                    "projects" -> currentRoute.contains("Projects") || currentRoute.contains("Categories") || currentRoute.contains("AllTasks")
                     "history" -> currentRoute.contains("History")
                     "profile" -> currentRoute.contains("Profile") || currentRoute.contains("Settings")
                     "add" -> false

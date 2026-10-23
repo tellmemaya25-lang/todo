@@ -38,6 +38,9 @@ sealed interface Route {
     data object Search : Route
 
     @Serializable
+    data object Projects : Route
+
+    @Serializable
     data object History : Route
 
     @Serializable
@@ -58,6 +61,7 @@ object LegacyRoutes {
     const val FORGOT = "forgot"
     const val HOME = "home"
     const val ALL_TASKS = "all_tasks"
+    const val PROJECTS = "projects"
     const val CATEGORY_DETAIL = "category_detail/{categoryId}"
     const val TASK_DETAIL = "task_detail/{taskId}"
     const val ADD_EDIT = "add_edit?taskId={taskId}"
