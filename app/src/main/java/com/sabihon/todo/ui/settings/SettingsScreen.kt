@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sabihon.todo.core.datastore.ThemePref
+import com.sabihon.todo.core.ui.components.DaymarkScreenTitle
 import com.sabihon.todo.core.ui.theme.AccentBlue
 import com.sabihon.todo.ui.profile.ProfileViewModel
 
@@ -64,7 +65,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { DaymarkScreenTitle("Settings") },
                 navigationIcon = {
                     androidx.compose.material3.IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")

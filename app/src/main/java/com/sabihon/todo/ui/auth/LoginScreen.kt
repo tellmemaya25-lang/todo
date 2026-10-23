@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.sabihon.todo.core.ui.components.DaymarkMark
 import com.sabihon.todo.core.ui.theme.AccentBlue
 
 /**
@@ -72,6 +73,8 @@ fun LoginScreen(
                 .padding(20.dp),
             verticalArrangement = Arrangement.Center
         ) {
+            DaymarkMark(size = 48.dp)
+            Spacer(Modifier.height(16.dp))
             Text(
                 text = "Welcome back",
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold, fontSize = 28.sp),

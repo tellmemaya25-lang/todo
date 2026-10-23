@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sabihon.todo.core.ui.components.CategoryCard
+import com.sabihon.todo.core.ui.components.DaymarkScreenTitle
 import com.sabihon.todo.core.ui.components.EmptyState
 import com.sabihon.todo.core.ui.components.SabihonFab
 import com.sabihon.todo.core.ui.components.TaskRow
@@ -56,7 +57,7 @@ fun CategoriesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("All Task List") },
+                title = { DaymarkScreenTitle("All Task List") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -181,7 +182,7 @@ fun CategoryDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(uiState.category?.name ?: "Category") },
+                title = { DaymarkScreenTitle(uiState.category?.name ?: "Category") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")

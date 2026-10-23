@@ -91,6 +91,26 @@ fun DaymarkLockup(
     }
 }
 
+/**
+ * Screen title with the daymark mark – used in top bars so every page carries the logo.
+ */
+@Composable
+fun DaymarkScreenTitle(
+    title: String,
+    modifier: Modifier = Modifier,
+    markSize: Dp = 28.dp,
+    style: TextStyle = MaterialTheme.typography.titleLarge
+) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        DaymarkMark(size = markSize)
+        Spacer(Modifier.width(10.dp))
+        Text(
+            text = title,
+            style = style
+        )
+    }
+}
+
 @Preview(name = "daymark lockup – light", showBackground = true, widthDp = 360)
 @Preview(name = "daymark lockup – dark", showBackground = true, widthDp = 360, uiMode = 32)
 @Composable
