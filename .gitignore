@@ -40,6 +40,12 @@ node_modules/
 dist/
 out/
 
+# Cloud Functions build output (functions/src is the source of truth)
+functions/lib/
+functions/*.log
+firebase-debug.log
+.firebase/
+
 # Secrets
 secrets.properties
 keystore.properties

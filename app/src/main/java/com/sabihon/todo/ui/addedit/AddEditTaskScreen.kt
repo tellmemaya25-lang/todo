@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -53,10 +54,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.sabihon.todo.R
 import com.sabihon.todo.core.ui.components.ConfirmDialog
 import com.sabihon.todo.core.ui.components.SubTaskRoundedCheckbox
 import com.sabihon.todo.core.ui.theme.AccentBlue
@@ -151,6 +154,16 @@ fun AddEditTaskScreen(
                     cursorColor = AccentBlue
                 )
             )
+
+            // Smart fill – AI quick-add. Proposes fields from the title; user still reviews & saves.
+            SmartFillRow(
+                isBusy = uiState.isSmartFilling,
+                notes = uiState.smartFillNotes,
+                degraded = uiState.smartFillDegraded,
+                enabled = uiState.title.isNotBlank() && !uiState.isSaving,
+                onClick = viewModel::smartFill
+            )
+
             OutlinedTextField(
                 value = uiState.description,
                 onValueChange = viewModel::onDescriptionChange,
@@ -491,5 +504,68 @@ private fun safeFormatTime(millis: Long): String {
         fmt.format(Date(millis))
     } catch (e: Exception) {
         "Invalid time"
+    }
+}
+
+/**
+ * "Smart fill" action + explanation chips. Pure presentation – all parsing lives in
+ * [AddEditViewModel.smartFill] → ParseTaskUseCase.
+ */
+@Composable
+private fun SmartFillRow(
+    isBusy: Boolean,
+    notes: List<String>,
+    degraded: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = onClick, enabled = enabled && !isBusy) {
+                if (isBusy) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp,
+                        color = AccentBlue
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.AutoAwesome,
+                        contentDescription = null,
+                        tint = AccentBlue,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = stringResource(if (isBusy) R.string.smart_fill_working else R.string.smart_fill),
+                    color = AccentBlue,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            if (notes.isEmpty() && !isBusy) {
+                Text(
+                    text = stringResource(R.string.smart_fill_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        if (notes.isNotEmpty()) {
+            Text(
+                text = notes.joinToString(separator = "  ·  "),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 12.dp)
+            )
+            if (degraded) {
+                Text(
+                    text = stringResource(R.string.smart_fill_offline),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 12.dp, top = 2.dp)
+                )
+            }
+        }
     }
 }

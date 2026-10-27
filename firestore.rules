@@ -26,5 +26,14 @@ service cloud.firestore {
     match /users/{uid}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
+
+    // ---- AI gateway bookkeeping (docs/ai/02-daymark-ai-system-design.md §6.1) ----
+    // Written and read ONLY by Cloud Functions via the Admin SDK (which bypasses rules).
+    // Kept top-level on purpose so the users/{uid}/** rule above can never expose them,
+    // and denied explicitly so nobody can tamper with their own rate limits or budgets.
+    match /ai_usage/{document=**}      { allow read, write: if false; }
+    match /ai_cache/{document=**}      { allow read, write: if false; }
+    match /ai_user_state/{document=**} { allow read, write: if false; }
+    match /ai_metrics/{document=**}    { allow read, write: if false; }
   }
 }
