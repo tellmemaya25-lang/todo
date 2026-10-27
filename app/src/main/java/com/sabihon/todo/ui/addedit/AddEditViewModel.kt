@@ -9,8 +9,10 @@ import com.sabihon.todo.domain.model.SubTask
 import com.sabihon.todo.domain.model.Task
 import com.sabihon.todo.domain.repository.CategoryRepository
 import com.sabihon.todo.domain.repository.TaskRepository
+import com.sabihon.todo.domain.model.ai.TaskDraft
 import com.sabihon.todo.domain.usecase.AddTaskUseCase
 import com.sabihon.todo.domain.usecase.DeleteTaskUseCase
+import com.sabihon.todo.domain.usecase.ParseTaskUseCase
 import com.sabihon.todo.domain.usecase.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +32,7 @@ class AddEditViewModel @Inject constructor(
     private val addTaskUseCase: AddTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val parseTaskUseCase: ParseTaskUseCase,
     private val taskRepository: TaskRepository,
     private val categoryRepository: CategoryRepository,
     private val auth: FirebaseAuth
@@ -98,7 +101,55 @@ class AddEditViewModel @Inject constructor(
     }
 
     fun onTitleChange(title: String) {
-        _uiState.update { it.copy(title = title, titleError = null) }
+        _uiState.update { it.copy(title = title, titleError = null, smartFillNotes = emptyList(), smartFillDegraded = false) }
+    }
+
+    /**
+     * Smart fill: parse whatever the user typed in the title ("call mom tomorrow 5pm urgent")
+     * into structured fields. The AI only proposes a [TaskDraft]; nothing is saved until the
+     * user taps Save, and every field stays editable.
+     */
+    fun smartFill() {
+        val text = _uiState.value.title
+        if (text.isBlank()) {
+            _uiState.update { it.copy(titleError = "Type a task first") }
+            return
+        }
+        if (_uiState.value.isSmartFilling) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSmartFilling = true, errorMessage = null) }
+            when (val result = parseTaskUseCase(text)) {
+                is Result.Success -> applyDraft(result.data)
+                is Result.Error -> _uiState.update { it.copy(isSmartFilling = false, errorMessage = result.message) }
+                is Result.Loading -> _uiState.update { it.copy(isSmartFilling = false) }
+            }
+        }
+    }
+
+    private fun applyDraft(draft: TaskDraft) {
+        _uiState.update { current ->
+            val newSubTasks = draft.subTasks
+                .filter { suggestion -> current.subTasks.none { it.title.equals(suggestion, ignoreCase = true) } }
+                .mapIndexed { index, title ->
+                    SubTask(id = System.currentTimeMillis().toString() + "_ai" + index, title = title, isDone = false)
+                }
+            current.copy(
+                isSmartFilling = false,
+                title = draft.title.ifBlank { current.title },
+                description = if (current.description.isBlank()) draft.description else current.description,
+                categoryId = draft.categoryId ?: current.categoryId,
+                priority = draft.priority ?: current.priority,
+                dueAt = draft.dueAt ?: current.dueAt,
+                dueDateMillis = draft.dueAt ?: current.dueDateMillis,
+                dueTimeMillis = draft.dueAt ?: current.dueTimeMillis,
+                reminderEnabled = current.reminderEnabled || draft.reminderAt != null,
+                reminderAt = draft.reminderAt ?: current.reminderAt,
+                subTasks = current.subTasks + newSubTasks,
+                smartFillNotes = draft.explanations,
+                smartFillDegraded = draft.isDegraded,
+                titleError = null
+            )
+        }
     }
 
     fun onDescriptionChange(desc: String) {

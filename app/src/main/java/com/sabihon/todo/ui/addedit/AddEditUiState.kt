@@ -26,5 +26,11 @@ data class AddEditUiState(
     val titleError: String? = null,
     val categories: List<Category> = emptyList(),
     val isEditMode: Boolean = false,
-    val showDeleteConfirm: Boolean = false
+    val showDeleteConfirm: Boolean = false,
+    /** Smart fill (AI quick-add) – true while the title is being parsed. */
+    val isSmartFilling: Boolean = false,
+    /** Short notes shown under the title after Smart fill, e.g. "Due: Tomorrow 5:00 PM". */
+    val smartFillNotes: List<String> = emptyList(),
+    /** True when the result came from on-device rules because the AI tier was unavailable. */
+    val smartFillDegraded: Boolean = false
 )

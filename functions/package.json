@@ -1,0 +1,25 @@
+{
+  "name": "daymark-ai-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Daymark AI gateway - Cloud Functions: auth, rate limits, guardrails, response cache, model router, fallback provider, CDC, metrics",
+  "main": "lib/index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "tsc && node --test \"lib/**/*.test.js\"",
+    "serve": "npm run build && firebase emulators:start --only functions,firestore",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "firebase-functions": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,6 @@
+node_modules/
+lib/
+*.log
+# Firebase params: commit .env.<project> (non-secret config) but never local overrides
+.env.local
+.env.*.local
